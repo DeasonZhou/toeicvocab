@@ -20,6 +20,21 @@
         #debugInfo {
             display: none;
         }
+        .masked {
+            filter: blur(5px);
+            user-select: none;
+        }
+        .masked:hover {
+            filter: none;
+        }
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            .word-card {
+                margin-bottom: 1rem;
+            }
+        }
     </style>
 </head>
 <body class="bg-gray-100">
@@ -27,8 +42,27 @@
         <header class="text-center mb-8">
             <h1 class="text-3xl font-bold text-gray-800 mb-2">TOEIC高频词汇</h1>
             <p class="text-gray-600 mb-4">点击单词旁的喇叭图标可收听发音</p>
+            
+            <!-- 遮罩控制按钮 -->
+            <div class="flex justify-center gap-4 mb-4">
+                <button onclick="toggleMask('word')" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600">
+                    遮盖英文
+                </button>
+                <button onclick="toggleMask('meaning')" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600">
+                    遮盖中文
+                </button>
+                <button onclick="toggleMask('none')" class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600">
+                    显示全部
+                </button>
+            </div>
+
+            <!-- 进度显示 -->
+            <div id="progressInfo" class="text-sm text-gray-600 mb-4"></div>
+            
             <div id="debugInfo" class="text-sm text-gray-500 mb-4"></div>
-            <div class="flex justify-center gap-4 mb-4" id="groupButtons"></div>
+            
+            <div class="flex justify-center gap-4 mb-4 flex-wrap" id="groupButtons"></div>
+
             <input type="text" id="searchInput" placeholder="搜索单词..." 
                    class="w-full max-w-md px-4 py-2 rounded border focus:outline-none focus:ring-2 focus:ring-blue-500">
         </header>
@@ -40,12 +74,11 @@
         <div id="wordContainer" class="grid gap-4 md:grid-cols-2 lg:grid-cols-3"></div>
     </div>
 
-    <!-- 重要：先加载 PapaParse -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
-
-    <!-- 主程序代码 -->
+    
     <script>
         let vocabularyData = [];
+        let currentMaskMode = 'none';
 
         function speak(text) {
             const utterance = new SpeechSynthesisUtterance(text);
@@ -54,12 +87,20 @@
             window.speechSynthesis.speak(utterance);
         }
 
+        function toggleMask(mode) {
+            currentMaskMode = mode;
+            const currentGroup = document.querySelector('#groupButtons .bg-blue-700')?.textContent;
+            if (currentGroup) {
+                showGroup(currentGroup);
+            }
+        }
+
         function createWordCard(word) {
             return `
                 <div class="word-card bg-white rounded-lg shadow-md p-4 hover:shadow-lg">
                     <div class="flex justify-between items-start mb-2">
                         <div class="flex items-center gap-2">
-                            <h2 class="text-xl font-bold text-gray-800">${word.Word}</h2>
+                            <h2 class="text-xl font-bold text-gray-800 ${currentMaskMode === 'word' ? 'masked' : ''}">${word.Word}</h2>
                             <button 
                                 onclick="speak('${word.Word}')"
                                 class="p-2 rounded-full hover:bg-gray-100"
@@ -70,10 +111,16 @@
                         </div>
                         <span class="text-sm font-medium text-gray-500">${word.POS}</span>
                     </div>
-                    <p class="text-gray-700 mb-2">${word.Meaning}</p>
-                    ${word.Note && word.Note !== '-' ? `<p class="text-sm text-gray-600 border-t pt-2">${word.Note}</p>` : ''}
+                    <p class="text-gray-700 mb-2 ${currentMaskMode === 'meaning' ? 'masked' : ''}">${word.Meaning}</p>
+                    ${word.Note && word.Note !== '-' ? `<p class="text-sm text-gray-600 border-t pt-2 ${currentMaskMode === 'meaning' ? 'masked' : ''}">${word.Note}</p>` : ''}
                 </div>
             `;
+        }
+
+        function updateProgress(groupName, total) {
+            const progressInfo = document.getElementById('progressInfo');
+            const currentGroupTotal = vocabularyData.filter(item => item.Group === groupName).length;
+            progressInfo.textContent = `当前组：${groupName} (${currentGroupTotal}个单词) | 总计：${total}个单词`;
         }
 
         function showGroup(groupName) {
@@ -84,6 +131,17 @@
             loading.style.display = 'block';
             container.innerHTML = '';
 
+            // 更新按钮状态
+            document.querySelectorAll('#groupButtons button').forEach(btn => {
+                if (btn.textContent === groupName) {
+                    btn.classList.remove('bg-blue-500');
+                    btn.classList.add('bg-blue-700');
+                } else {
+                    btn.classList.remove('bg-blue-700');
+                    btn.classList.add('bg-blue-500');
+                }
+            });
+
             const groupData = vocabularyData.filter(item => item.Group === groupName);
             
             if (groupData.length === 0) {
@@ -92,7 +150,7 @@
                 return;
             }
 
-            debugInfo.textContent = `显示 ${groupName} 的 ${groupData.length} 个单词`;
+            updateProgress(groupName, vocabularyData.length);
             container.innerHTML = groupData.map(createWordCard).join('');
             loading.style.display = 'none';
         }
@@ -106,6 +164,7 @@
             
             const container = document.getElementById('wordContainer');
             container.innerHTML = filteredWords.map(createWordCard).join('');
+            updateProgress('搜索结果', vocabularyData.length);
         });
 
         // 加载CSV数据
