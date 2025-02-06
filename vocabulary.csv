@@ -6,12 +6,12 @@ group1,customer,名词,顾客,相关: custom 【名】习俗，海关
 group1,service,名词,"服务，公共事业(电,交通,通信等)",相关: serve 【动】服务，提供
 group1,product,名词,产品,相关: produce 【动】生产
 group1,sale,名词,贩卖，特卖,词根: sell 【动】销售
-group1,order,名词/动词,顺序，订购，命令；订购,-
-group1,store,名词/动词,店铺，存储；存储,相关: storage 【名】存储
+group1,order,名词/动词,顺序，订购，命令,-
+group1,store,名词/动词,店铺；存储,相关: storage 【名】存储
 group1,price,名词/动词,价格；定价,-
 group1,schedule,名词,日程安排,用法: be scheduled to do/for 计划做某事
-group1,plan,名词/动词,计划；计划,-
-group1,work,动词/名词,工作；工作，作品,-
+group1,plan,名词/动词,计划,-
+group1,work,动词/名词,工作；作品,-
 group1,refer,动词,参照，提及，关联,相关: reference 【名】参考文献
 group1,meet,动词,满足，相遇,相关: meeting 【名】会议
 group1,need,动词/名词,需要；必要性,-
