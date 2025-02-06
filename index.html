@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TOEIC词汇学习</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <style>
+        .word-card {
+            transition: transform 0.2s;
+        }
+        .word-card:hover {
+            transform: translateY(-2px);
+        }
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        #debugInfo {
+            display: none;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto px-4 py-8">
+        <header class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-gray-800 mb-2">TOEIC高频词汇</h1>
+            <p class="text-gray-600 mb-4">点击单词旁的喇叭图标可收听发音</p>
+            <div id="debugInfo" class="text-sm text-gray-500 mb-4"></div>
+            <div class="flex justify-center gap-4 mb-4" id="groupButtons"></div>
+            <input type="text" id="searchInput" placeholder="搜索单词..." 
+                   class="w-full max-w-md px-4 py-2 rounded border focus:outline-none focus:ring-2 focus:ring-blue-500">
+        </header>
+
+        <div id="loading" class="loading">
+            <p>加载中...</p>
+        </div>
+
+        <div id="wordContainer" class="grid gap-4 md:grid-cols-2 lg:grid-cols-3"></div>
+    </div>
+
+    <!-- 重要：先加载 PapaParse -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+
+    <!-- 主程序代码 -->
+    <script>
+        let vocabularyData = [];
+
+        function speak(text) {
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'en-US';
+            utterance.rate = 0.9;
+            window.speechSynthesis.speak(utterance);
+        }
+
+        function createWordCard(word) {
+            return `
+                <div class="word-card bg-white rounded-lg shadow-md p-4 hover:shadow-lg">
+                    <div class="flex justify-between items-start mb-2">
+                        <div class="flex items-center gap-2">
+                            <h2 class="text-xl font-bold text-gray-800">${word.Word}</h2>
+                            <button 
+                                onclick="speak('${word.Word}')"
+                                class="p-2 rounded-full hover:bg-gray-100"
+                                title="播放发音"
+                            >
+                                🔊
+                            </button>
+                        </div>
+                        <span class="text-sm font-medium text-gray-500">${word.POS}</span>
+                    </div>
+                    <p class="text-gray-700 mb-2">${word.Meaning}</p>
+                    ${word.Note && word.Note !== '-' ? `<p class="text-sm text-gray-600 border-t pt-2">${word.Note}</p>` : ''}
+                </div>
+            `;
+        }
+
+        function showGroup(groupName) {
+            const container = document.getElementById('wordContainer');
+            const loading = document.getElementById('loading');
+            const debugInfo = document.getElementById('debugInfo');
+
+            loading.style.display = 'block';
+            container.innerHTML = '';
+
+            const groupData = vocabularyData.filter(item => item.Group === groupName);
+            
+            if (groupData.length === 0) {
+                debugInfo.textContent = `没有找到组 ${groupName} 的数据`;
+                loading.style.display = 'none';
+                return;
+            }
+
+            debugInfo.textContent = `显示 ${groupName} 的 ${groupData.length} 个单词`;
+            container.innerHTML = groupData.map(createWordCard).join('');
+            loading.style.display = 'none';
+        }
+
+        document.getElementById('searchInput').addEventListener('input', function(e) {
+            const searchText = e.target.value.toLowerCase();
+            const filteredWords = vocabularyData.filter(word => 
+                word.Word.toLowerCase().includes(searchText) ||
+                word.Meaning.toLowerCase().includes(searchText)
+            );
+            
+            const container = document.getElementById('wordContainer');
+            container.innerHTML = filteredWords.map(createWordCard).join('');
+        });
+
+        // 加载CSV数据
+        Papa.parse('vocabulary.csv', {
+            download: true,
+            header: true,
+            encoding: "UTF-8",
+            complete: function(results) {
+                vocabularyData = results.data;
+                
+                // 创建组按钮
+                const groupButtons = document.getElementById('groupButtons');
+                const groups = new Set(vocabularyData.map(item => item.Group));
+                
+                groups.forEach(groupName => {
+                    const button = document.createElement('button');
+                    button.textContent = groupName;
+                    button.className = "px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600";
+                    button.onclick = () => showGroup(groupName);
+                    groupButtons.appendChild(button);
+                });
+
+                // 显示第一组
+                if (vocabularyData.length > 0) {
+                    showGroup(vocabularyData[0].Group);
+                }
+            },
+            error: function(error) {
+                console.error('Error:', error);
+                document.getElementById('debugInfo').style.display = 'block';
+                document.getElementById('debugInfo').textContent = '加载词汇数据出错';
+            }
+        });
+    </script>
+</body>
+</html>

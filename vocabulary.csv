@@ -1,0 +1,101 @@
+﻿Group,Word,POS,Meaning,Note
+group1,company,名词,公司，陪伴,易混: accompany 【动】伴随
+group1,business,名词,业务，商业,相关: businessman (男性) 企业家
+group1,office,名词,办公室，公司，职场，事务所,-
+group1,customer,名词,顾客,相关: custom 【名】习俗，海关
+group1,service,名词,"服务，公共事业(电,交通,通信等)",相关: serve 【动】服务，提供
+group1,product,名词,产品,相关: produce 【动】生产
+group1,sale,名词,贩卖，特卖,词根: sell 【动】销售
+group1,order,名词/动词,顺序，订购，命令；订购,-
+group1,store,名词/动词,店铺，存储；存储,相关: storage 【名】存储
+group1,price,名词/动词,价格；定价,-
+group1,schedule,名词,日程安排,用法: be scheduled to do/for 计划做某事
+group1,plan,名词/动词,计划；计划,-
+group1,work,动词/名词,工作；工作，作品,-
+group1,refer,动词,参照，提及，关联,相关: reference 【名】参考文献
+group1,meet,动词,满足，相遇,相关: meeting 【名】会议
+group1,need,动词/名词,需要；必要性,-
+group1,call,动词/名词,打电话；电话,相关: caller 【名】来访者
+group1,want,动词,想做某事,常用: want to do
+group1,open,动词/形容词,打开；开着的,相关: opening 【名】空缺，开业
+group1,close,动词/形容词,关闭，结束；紧密的，接近的,相关: closing 【名】关门
+group1,change,动词/名词,改变；变化,-
+group1,offer,动词/名词,提供；报价，建议,-
+group1,provide,动词,提供,相关: provision 【名】提供，provider 【名】供应商
+group1,receive,动词,接受,相关: receipt 【名】收据
+group1,information,名词,信息,相关: inform 【动】通知
+group2,event,名词,活动,-
+group2,contact,名词/动词,接触，联络,-
+group2,room,名词,房间，空间，余地,-
+group2,subject,名词,话题，主题，学科,形容词: 视...而定，易遭受...的
+group2,experience,名词/动词,经验；体验，体会,-
+group2,include,动词,包含,介词: including 包括，包含
+group2,check,动词/名词,检查，确认；检查，支票,-
+group2,suggest,动词,建议，表明，推荐,名词: suggestion 提案，暗示，建议
+group2,show,动词/名词,表明，展现；展会,-
+group2,indicate,动词,指示，表明,名词: indication 显示，表明，象征
+group2,mean,动词,意味着,不规则变化: mean/meant/meant，名词: meaning 意思
+group2,notice,动词/名词,注意，留意；通知，预告,相关: notify 通知，noticeable 显著的
+group2,sign,动词/名词,签名，签字；标志牌，标识,词组: sign up for 报名
+group2,increase,动词/名词,增加，增长；增加,反义词: decrease
+group2,move,动词/名词,移动，搬家；行动，转移,相关: movement 政治或社会性活动
+group2,arrive,动词,到达，抵达,名词: arrival 到达
+group2,ship,动词/名词,运送；船,相关: shipping 航运，船舶
+group2,list,名词/动词,清单，列表；列举,-
+group2,article,名词,文章，论文，物件,-
+group2,form,名词/动词,形式，形状；组成，建立,-
+group2,type,名词/动词,种类，人的性格；打字，定型,-
+group2,system,名词,系统，装置，方式,形容词: systematic 系统的，成体系的
+group2,training,名词/动词,培训，养成；训练,相关: trainer 教练员，trainee 培训生
+group2,director,名词,董事，经理，导演，主任,-
+group2,minute,名词,分钟，一会儿功夫,相关: minutes 备忘录
+group3,end,名词/动词,结束，一端；结束,-
+group3,purpose,名词,目的，目标,-
+group3,mark,名词/动词,印记，水准；标记,相关: marked 显而易见的，明显的，显著的
+group3,software,名词,软件,-
+group3,special,形容词/名词,特别的，重要的；特别节日，特制品,名词: 特别处理
+group3,even,形容词/副词,平滑的，平坦的；即使，还,副词: evenly 均匀地，平均地
+group3,international,形容词,国际的,-
+group3,human,形容词/名词,人的；人,-
+group3,own,形容词/动词,自己的；拥有，所有,-
+group3,additional,形容词,额外的,副词: additionally
+group3,extra,形容词/副词/名词,额外的；额外的部分,-
+group3,due,形容词/名词,因为，到期；应缴款项,相关: overdue 逾期，过期未付的
+group3,professional,形容词/名词,专业的，职业上的；专家,反义词: amateur 业余的
+group3,popular,形容词,受欢迎的,名词: popularity 人气
+group3,pleased,形容词,高兴的，满意的,动词: please 喜欢，使满意
+group3,present,形容词/名词/动词,存在，出席，在场；礼物；提出,-
+group3,research,名词/动词,调查，研究,相关: researcher 研究者
+group3,survey,名词/动词,问卷调查,-
+group3,feature,名词/动词,特征，杂志电视特辑；以...为特色,-
+group3,detail,名词/动词,细节；详细说明,词组: in detail 详细的
+group3,course,名词,讲座，课程,-
+group3,issue,名词/动词,问题，杂志的期刊号；发行,-
+group3,credit,名词/动词,信用；往银行存钱,-
+group3,quality,名词,品质,-
+group3,expensive,形容词,价格高的,名词: expense 费用
+group4,busy,形容词,忙碌的,-
+group4,personal,形容词,个人的,名词: person 人
+group4,successful,形容词,成功的,副词: successfully，名词: success
+group4,fair,形容词/名词,公正的；展览会，博览会,-
+group4,latest,形容词,最近的，最新的,-
+group4,final,形容词/名词,最后的，最终的；决赛，期末考试,-
+group4,short,形容词,短，不足,动词: shorten 缩短，名词: shortage 不足
+group4,direct,形容词/动词,直接的；指导，指示，指向,-
+group4,excellent,形容词,优秀的,名词: excellence，动词: excel
+group4,assistant,形容词/名词,辅助的，帮助的；助手,动词: assist
+group4,official,形容词/名词,官方的；公务员，职员,副词: officially
+group4,board,名词/动词,板，董事会；乘坐交通工具,名词: boarding 搭乘
+group4,trip,名词,旅行，出差,-
+group4,traffic,名词,交通(量),-
+group4,passenger,名词,乘客，旅客,-
+group4,air,名词/动词,空气，空中，飞机；播出，晾干,-
+group4,direction,名词,方向，指示，说明,动词: direct 指导，指示，管理
+group4,production,名词,制造，生产,相关: product 产品，produce 动词生产
+group4,material,名词/形容词,材料，资料；物质的,-
+group4,budget,名词/动词,预算；做预算,搭配介词for
+group4,fee,名词,费用，报酬,常见词组: entrance/registration fee
+group4,market,名词/动词,市场；推销，促销,形容词: marketable 畅销的，容易出售的
+group4,tour,名词/动词,旅行，视察，参观,-
+group4,interview,名词/动词,面试,相关: interviewer 采访者，面试者
+group4,appointment,名词,约会，预约，任命,动词: appoint
