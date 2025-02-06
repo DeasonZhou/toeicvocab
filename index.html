@@ -481,6 +481,33 @@
         function toggleHelp() {
             document.getElementById('helpModal').classList.toggle('hidden');}
 
+        // 收藏单词
+        function toggleFavorite(word) {
+            if (favorites.includes(word)) {
+                favorites = favorites.filter(w => w !== word); // 移除收藏
+            } else {
+                favorites.push(word); // 添加收藏
+            }
+            localStorage.setItem('favorites', JSON.stringify(favorites)); // 更新localStorage
+            updateFavoriteButton(word); // 更新按钮状态
+        }
+
+        // 更新收藏按钮状态
+        function updateFavoriteButton(word) {
+            const buttons = document.querySelectorAll(`[onclick="toggleFavorite('${word}')"]`);
+            buttons.forEach(button => {
+                button.textContent = favorites.includes(word) ? '⭐️' : '☆';
+            });
+        }
+
+        // 显示收藏夹
+        function showFavorites() {
+            const favoriteWords = vocabularyData.filter(word => favorites.includes(word.Word));
+            const container = document.getElementById('wordContainer');
+            container.innerHTML = favoriteWords.map(createWordCard).join('');
+            updateProgress('收藏夹', vocabularyData.length);
+        }
+
         // 初始化
         initTheme();
         const savedFontSize = localStorage.getItem('fontSize');
