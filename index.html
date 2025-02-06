@@ -1,85 +1,265 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" class="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TOEIC词汇学习</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
     <style>
+        /* 深色模式样式 */
+        html.dark {
+            background-color: #1a1a1a;
+            color: #ffffff;
+        }
+        html.dark .bg-white {
+            background-color: #2d2d2d;
+            color: #ffffff;
+        }
+        html.dark .text-gray-800 {
+            color: #ffffff;
+        }
+        html.dark .text-gray-700 {
+            color: #e0e0e0;
+        }
+        html.dark .text-gray-600 {
+            color: #cccccc;
+        }
+        html.dark .text-gray-500 {
+            color: #b3b3b3;
+        }
+        html.dark .border-t {
+            border-color: #404040;
+        }
+        
+        /* 卡片样式 */
         .word-card {
-            transition: transform 0.2s;
+            transition: all 0.3s ease;
+            perspective: 1000px;
         }
         .word-card:hover {
             transform: translateY(-2px);
         }
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+        .word-card.flipped .card-inner {
+            transform: rotateY(180deg);
+        }
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+        }
+        .card-back {
+            transform: rotateY(180deg);
+        }
+        
+        /* 遮罩效果 */
+        .masked {
+            filter: blur(5px);
+            user-select: none;
+            transition: filter 0.3s ease;
+        }
+        .masked:hover {
+            filter: none;
+        }
+        
+        /* 字体大小 */
+        .text-size-small { font-size: 0.9em; }
+        .text-size-normal { font-size: 1em; }
+        .text-size-large { font-size: 1.2em; }
+        
+        /* 加载动画 */
         .loading {
             display: none;
             text-align: center;
             padding: 20px;
         }
-        #debugInfo {
-            display: none;
+        .loading-spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
         }
-        .masked {
-            filter: blur(5px);
-            user-select: none;
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
-        .masked:hover {
-            filter: none;
-        }
+        
+        /* 响应式设计 */
         @media (max-width: 768px) {
-            .container {
-                padding: 1rem;
-            }
-            .word-card {
-                margin-bottom: 1rem;
-            }
+            .container { padding: 0.5rem; }
+            .word-card { margin-bottom: 0.5rem; }
+            .button-group { flex-wrap: wrap; gap: 0.5rem; }
+            .button-group button { width: calc(50% - 0.5rem); }
+        }
+
+        /* 快捷键提示 */
+        .shortcut-hint {
+            font-size: 0.8em;
+            color: #666;
+            margin-left: 0.5em;
+        }
+        html.dark .shortcut-hint {
+            color: #999;
+        }
+
+        /* 工具栏 */
+        .toolbar {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 1000;
+        }
+        .toolbar button {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #4a5568;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .toolbar button:hover {
+            transform: scale(1.1);
         }
     </style>
 </head>
-<body class="bg-gray-100">
+<body class="bg-gray-100 transition-colors duration-200">
     <div class="container mx-auto px-4 py-8">
         <header class="text-center mb-8">
             <h1 class="text-3xl font-bold text-gray-800 mb-2">TOEIC高频词汇</h1>
-            <p class="text-gray-600 mb-4">点击单词旁的喇叭图标可收听发音</p>
+            <p class="text-gray-600 mb-4">点击单词旁的喇叭图标可收听发音<span class="shortcut-hint">(空格键翻转卡片)</span></p>
             
-            <!-- 遮罩控制按钮 -->
-            <div class="flex justify-center gap-4 mb-4">
-                <button onclick="toggleMask('word')" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600">
+            <!-- 设置面板 -->
+            <div class="settings-panel mb-4 flex justify-center gap-4 flex-wrap">
+                <button onclick="toggleTheme()" class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600" title="快捷键: D">
+                    切换深色模式
+                </button>
+                <div class="flex gap-2">
+                    <button onclick="adjustFontSize('small')" class="px-3 py-2 bg-gray-500 text-white rounded hover:bg-gray-600">A-</button>
+                    <button onclick="adjustFontSize('normal')" class="px-3 py-2 bg-gray-500 text-white rounded hover:bg-gray-600">A</button>
+                    <button onclick="adjustFontSize('large')" class="px-3 py-2 bg-gray-500 text-white rounded hover:bg-gray-600">A+</button>
+                </div>
+            </div>
+
+            <!-- 遮罩控制 -->
+            <div class="button-group flex justify-center gap-4 mb-4">
+                <button onclick="toggleMask('word')" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600" title="快捷键: E">
                     遮盖英文
                 </button>
-                <button onclick="toggleMask('meaning')" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600">
+                <button onclick="toggleMask('meaning')" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600" title="快捷键: C">
                     遮盖中文
                 </button>
-                <button onclick="toggleMask('none')" class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600">
+                <button onclick="toggleMask('none')" class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600" title="快捷键: R">
                     显示全部
+                </button>
+                <button onclick="toggleCardMode()" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600" title="快捷键: M">
+                    切换卡片模式
                 </button>
             </div>
 
-            <!-- 进度显示 -->
+            <!-- 进度信息 -->
             <div id="progressInfo" class="text-sm text-gray-600 mb-4"></div>
+            <div id="studyStats" class="text-sm text-gray-600 mb-4"></div>
             
-            <div id="debugInfo" class="text-sm text-gray-500 mb-4"></div>
+            <div id="debugInfo" class="text-sm text-gray-500 mb-4 hidden"></div>
             
+            <!-- 分组按钮 -->
             <div class="flex justify-center gap-4 mb-4 flex-wrap" id="groupButtons"></div>
 
-            <input type="text" id="searchInput" placeholder="搜索单词..." 
-                   class="w-full max-w-md px-4 py-2 rounded border focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <!-- 搜索框 -->
+            <input 
+                type="text" 
+                id="searchInput" 
+                placeholder="搜索单词... (按 / 键快速搜索)" 
+                class="w-full max-w-md px-4 py-2 rounded border focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
         </header>
 
+        <!-- 加载提示 -->
         <div id="loading" class="loading">
-            <p>加载中...</p>
+            <div class="loading-spinner"></div>
+            <p class="mt-4">加载中...</p>
         </div>
 
+        <!-- 单词展示区域 -->
         <div id="wordContainer" class="grid gap-4 md:grid-cols-2 lg:grid-cols-3"></div>
+    </div>
+
+    <!-- 工具栏 -->
+    <div class="toolbar">
+        <button onclick="scrollToTop()" title="返回顶部" class="hover:bg-gray-600">↑</button>
+        <button onclick="toggleHelp()" title="帮助" class="hover:bg-gray-600">?</button>
+    </div>
+
+    <!-- 帮助弹窗 -->
+    <div id="helpModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center">
+        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg max-w-md w-full mx-4">
+            <h2 class="text-xl font-bold mb-4">快捷键指南</h2>
+            <ul class="space-y-2">
+                <li>空格键：翻转卡片</li>
+                <li>D：切换深色模式</li>
+                <li>E：遮盖英文</li>
+                <li>C：遮盖中文</li>
+                <li>R：显示全部</li>
+                <li>M：切换卡片模式</li>
+                <li>/：聚焦搜索框</li>
+                <li>1-9：切换单词组</li>
+                <li>Esc：关闭此窗口</li>
+            </ul>
+            <button onclick="toggleHelp()" class="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+                关闭
+            </button>
+        </div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
     
     <script>
+        // 全局变量
         let vocabularyData = [];
         let currentMaskMode = 'none';
+        let isCardMode = false;
+        let currentFontSize = 'normal';
+        let studyHistory = JSON.parse(localStorage.getItem('studyHistory')) || {};
 
+        // 初始化主题
+        function initTheme() {
+            const isDark = localStorage.getItem('darkMode') === 'true';
+            document.documentElement.classList.toggle('dark', isDark);
+        }
+
+        // 切换主题
+        function toggleTheme() {
+            document.documentElement.classList.toggle('dark');
+            localStorage.setItem('darkMode', document.documentElement.classList.contains('dark'));
+        }
+
+        // 调整字体大小
+        function adjustFontSize(size) {
+            currentFontSize = size;
+            document.querySelectorAll('.word-card').forEach(card => {
+                card.classList.remove('text-size-small', 'text-size-normal', 'text-size-large');
+                card.classList.add(`text-size-${size}`);
+            });
+            localStorage.setItem('fontSize', size);
+        }
+
+        // 语音合成
         function speak(text) {
             const utterance = new SpeechSynthesisUtterance(text);
             utterance.lang = 'en-US';
@@ -87,6 +267,7 @@
             window.speechSynthesis.speak(utterance);
         }
 
+        // 切换遮罩模式
         function toggleMask(mode) {
             currentMaskMode = mode;
             const currentGroup = document.querySelector('#groupButtons .bg-blue-700')?.textContent;
@@ -95,9 +276,23 @@
             }
         }
 
+        // 切换卡片模式
+        function toggleCardMode() {
+            isCardMode = !isCardMode;
+            const currentGroup = document.querySelector('#groupButtons .bg-blue-700')?.textContent;
+            if (currentGroup) {
+                showGroup(currentGroup);
+            }
+        }
+
+        // 创建单词卡片
         function createWordCard(word) {
+            if (isCardMode) {
+                return createFlipCard(word);
+            }
+
             return `
-                <div class="word-card bg-white rounded-lg shadow-md p-4 hover:shadow-lg">
+                <div class="word-card bg-white rounded-lg shadow-md p-4 hover:shadow-lg text-size-${currentFontSize}">
                     <div class="flex justify-between items-start mb-2">
                         <div class="flex items-center gap-2">
                             <h2 class="text-xl font-bold text-gray-800 ${currentMaskMode === 'word' ? 'masked' : ''}">${word.Word}</h2>
@@ -117,16 +312,55 @@
             `;
         }
 
+// 创建翻转卡片
+        function createFlipCard(word) {
+            return `
+                <div class="word-card bg-transparent" onclick="this.classList.toggle('flipped')">
+                    <div class="card-inner h-48">
+                        <div class="card-front bg-white rounded-lg shadow-md p-4">
+                            <div class="flex justify-between items-start">
+                                <h2 class="text-xl font-bold text-gray-800">${word.Word}</h2>
+                                <button 
+                                    onclick="speak('${word.Word}'); event.stopPropagation();"
+                                    class="p-2 rounded-full hover:bg-gray-100"
+                                    title="播放发音"
+                                >
+                                    🔊
+                                </button>
+                            </div>
+                            <p class="text-sm text-gray-500 mt-2">${word.POS}</p>
+                        </div>
+                        <div class="card-back bg-white rounded-lg shadow-md p-4">
+                            <p class="text-gray-700">${word.Meaning}</p>
+                            ${word.Note && word.Note !== '-' ? 
+                                `<p class="text-sm text-gray-600 border-t pt-2 mt-2">${word.Note}</p>` 
+                                : ''}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // 更新进度信息
         function updateProgress(groupName, total) {
             const progressInfo = document.getElementById('progressInfo');
             const currentGroupTotal = vocabularyData.filter(item => item.Group === groupName).length;
             progressInfo.textContent = `当前组：${groupName} (${currentGroupTotal}个单词) | 总计：${total}个单词`;
+            
+            // 更新学习统计
+            const studyStats = document.getElementById('studyStats');
+            const today = new Date().toLocaleDateString();
+            studyHistory[today] = (studyHistory[today] || 0) + 1;
+            localStorage.setItem('studyHistory', JSON.stringify(studyHistory));
+            
+            const totalToday = studyHistory[today] || 0;
+            studyStats.textContent = `今日学习：${totalToday}次浏览`;
         }
 
+        // 显示指定组的单词
         function showGroup(groupName) {
             const container = document.getElementById('wordContainer');
             const loading = document.getElementById('loading');
-            const debugInfo = document.getElementById('debugInfo');
 
             loading.style.display = 'block';
             container.innerHTML = '';
@@ -145,7 +379,7 @@
             const groupData = vocabularyData.filter(item => item.Group === groupName);
             
             if (groupData.length === 0) {
-                debugInfo.textContent = `没有找到组 ${groupName} 的数据`;
+                document.getElementById('debugInfo').textContent = `没有找到组 ${groupName} 的数据`;
                 loading.style.display = 'none';
                 return;
             }
@@ -155,6 +389,7 @@
             loading.style.display = 'none';
         }
 
+        // 搜索功能
         document.getElementById('searchInput').addEventListener('input', function(e) {
             const searchText = e.target.value.toLowerCase();
             const filteredWords = vocabularyData.filter(word => 
@@ -166,6 +401,69 @@
             container.innerHTML = filteredWords.map(createWordCard).join('');
             updateProgress('搜索结果', vocabularyData.length);
         });
+
+        // 键盘快捷键
+        document.addEventListener('keydown', function(e) {
+            if (e.target.tagName === 'INPUT') return; // 在输入框中不触发快捷键
+            
+            switch(e.key) {
+                case ' ': // 空格键翻转卡片
+                    e.preventDefault();
+                    if (isCardMode) {
+                        document.querySelectorAll('.word-card').forEach(card => 
+                            card.classList.toggle('flipped'));
+                    }
+                    break;
+                case 'd': // 切换深色模式
+                    toggleTheme();
+                    break;
+                case 'e': // 遮盖英文
+                    toggleMask('word');
+                    break;
+                case 'c': // 遮盖中文
+                    toggleMask('meaning');
+                    break;
+                case 'r': // 显示全部
+                    toggleMask('none');
+                    break;
+                case 'm': // 切换卡片模式
+                    toggleCardMode();
+                    break;
+                case '/': // 聚焦搜索框
+                    e.preventDefault();
+                    document.getElementById('searchInput').focus();
+                    break;
+                case 'Escape': // 关闭帮助窗口
+                    document.getElementById('helpModal').classList.add('hidden');
+                    break;
+            }
+            
+            // 数字键1-9切换单词组
+            if (e.key >= '1' && e.key <= '9') {
+                const buttons = document.querySelectorAll('#groupButtons button');
+                const index = parseInt(e.key) - 1;
+                if (buttons[index]) {
+                    buttons[index].click();
+                }
+            }
+        });
+
+        // 回到顶部
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // 显示/隐藏帮助
+        function toggleHelp() {
+            document.getElementById('helpModal').classList.toggle('hidden');
+        }
+
+        // 初始化
+        initTheme();
+        const savedFontSize = localStorage.getItem('fontSize');
+        if (savedFontSize) {
+            adjustFontSize(savedFontSize);
+        }
 
         // 加载CSV数据
         Papa.parse('vocabulary.csv', {
