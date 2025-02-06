@@ -11,6 +11,12 @@
             background-color: #1a1a1a;
             color: #ffffff;
         }
+        html.dark body {
+            background-color: #1a1a1a;
+        }
+        html.dark .bg-gray-100 {
+            background-color: #1a1a1a;
+        }
         html.dark .bg-white {
             background-color: #2d2d2d;
             color: #ffffff;
@@ -20,6 +26,20 @@
         html.dark .text-gray-600 { color: #cccccc; }
         html.dark .text-gray-500 { color: #b3b3b3; }
         html.dark .border-t { border-color: #404040; }
+        html.dark input {
+            background-color: #2d2d2d;
+            color: #ffffff;
+            border-color: #404040;
+        }
+        html.dark input::placeholder {
+            color: #888888;
+        }
+        html.dark .bg-opacity-50 {
+            background-color: rgba(0, 0, 0, 0.75);
+        }
+        html.dark #helpModal .bg-white {
+            background-color: #2d2d2d;
+        }
         
         /* 卡片基础样式 */
         .word-card {
@@ -174,6 +194,9 @@
                 <button onclick="toggleCardMode()" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600" title="快捷键: M">
                     切换卡片模式
                 </button>
+                <button onclick="showFavorites()" class="px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600">
+                    查看收藏夹
+                </button>
             </div>
 
             <!-- 进度信息 -->
@@ -236,6 +259,7 @@
         let currentMaskMode = 'none';
         let isCardMode = false;
         let currentFontSize = 'normal';
+        let favorites = JSON.parse(localStorage.getItem('favorites')) || []; // 收藏的单词列表
 
         // 初始化主题
         function initTheme() {
@@ -302,6 +326,13 @@
                                 title="播放发音"
                             >
                                 🔊
+                            </button>
+                            <button 
+                                onclick="toggleFavorite('${word.Word}')"
+                                class="p-2 rounded-full hover:bg-gray-100"
+                                title="收藏单词"
+                            >
+                                ${favorites.includes(word.Word) ? '⭐️' : '☆'}
                             </button>
                         </div>
                         <span class="text-sm font-medium text-gray-500">${word.POS}</span>
@@ -448,8 +479,7 @@
 
         // 显示/隐藏帮助
         function toggleHelp() {
-            document.getElementById('helpModal').classList.toggle('hidden');
-        }
+            document.getElementById('helpModal').classList.toggle('hidden');}
 
         // 初始化
         initTheme();
